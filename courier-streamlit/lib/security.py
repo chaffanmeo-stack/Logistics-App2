@@ -1,24 +1,21 @@
-"""Hashing + random code generation. Bcrypt hashes here are identical
-in format to the ones Supabase's SQL seed creates with pgcrypto's
-crypt(..., gen_salt('bf')) — both are standard bcrypt, so either side
-can verify the other's hashes."""
+"""Hashing + random code generation. Uses the `bcrypt` package directly
+(not passlib) — passlib 1.7.4 is incompatible with bcrypt>=4.1 and
+silently fails verification, which was causing logins to always fail."""
 
 import random
 import secrets
 import string
 
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt
 
 
 def hash_secret(raw: str) -> str:
-    return pwd_context.hash(raw)
+    return bcrypt.hashpw(raw.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_secret(raw: str, hashed: str) -> bool:
     try:
-        return pwd_context.verify(raw, hashed)
+        return bcrypt.checkpw(raw.encode("utf-8"), hashed.encode("utf-8"))
     except Exception:
         return False
 
