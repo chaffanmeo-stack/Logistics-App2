@@ -49,7 +49,7 @@ def _accounts_tab(sb):
                 {
                     "role": "Hub",
                     "full_name": name,
-                    "email": email,
+                    "email": email.strip().lower(),
                     "password_hash": hash_secret(password),
                     "home_hub": hub,
                 }
