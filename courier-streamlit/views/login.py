@@ -4,6 +4,8 @@ from lib.security import verify_secret
 
 
 def _try_login(sb, query_col: str, query_val: str, role_filter, secret_col: str, secret_val: str):
+    if query_col == "email":
+        query_val = query_val.strip().lower()  # emails are stored lowercase — ignore case on login
     q = sb.table("profiles").select("*").eq(query_col, query_val)
     if isinstance(role_filter, (list, tuple)):
         q = q.in_("role", list(role_filter))
